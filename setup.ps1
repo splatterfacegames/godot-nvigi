@@ -126,7 +126,7 @@ if ($Models) {
     if (-not (Test-Path $qwen)) {
         Invoke-WebRequest -Uri "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf" -OutFile $qwen
     }
-    $whisper = Join-Path $modelsDir "ggml-tiny.en.bin"
+    $whisper = Join-Path $modelsDir "ggml-tiny.en.gguf"
     if (-not (Test-Path $whisper)) {
         Invoke-WebRequest -Uri "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin" -OutFile $whisper
     }

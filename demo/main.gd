@@ -3,7 +3,7 @@
 extends Control
 
 const LLM_MODEL := "res://models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
-const ASR_MODEL := "res://models/ggml-tiny.en.bin"
+const ASR_MODEL := "res://models/ggml-tiny.en.gguf"
 
 @onready var prompt_edit: LineEdit = %PromptEdit
 @onready var generate_button: Button = %GenerateButton

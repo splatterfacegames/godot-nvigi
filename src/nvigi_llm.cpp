@@ -12,6 +12,8 @@
 #include <nvigi_stl_helpers.h>
 
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <vector>
 
 using namespace godot;
@@ -60,6 +62,11 @@ struct NvigiLLM::GenerationRun {
     std::chrono::steady_clock::time_point start;
     double ttft_ms = -1.0;
     nvigi::InferenceExecutionState final_state = nvigi::kInferenceExecutionStateInvalid;
+    // Completion signaling: the plugin streams tokens from its own thread via
+    // evaluateAsync(); we wait until a non-DataPending state arrives.
+    std::mutex mutex;
+    std::condition_variable cv;
+    bool done = false;
 };
 
 static nvigi::InferenceExecutionState llm_inference_callback(
@@ -83,6 +90,12 @@ static nvigi::InferenceExecutionState llm_inference_callback(
         }
     }
     run->final_state = state;
+    if (state != nvigi::kInferenceExecutionStateDataPending &&
+            state != nvigi::kInferenceExecutionStateDataPartial) {
+        std::lock_guard<std::mutex> lock(run->mutex);
+        run->done = true;
+        run->cv.notify_all();
+    }
     return state;
 }
 
@@ -148,7 +161,7 @@ int NvigiLLM::load_model(const String &gguf_path, const Dictionary &options) {
             "  \"guid\": \"{00000000-0000-0000-0000-000000000001}\",\n"
             "  \"vram\": " + std::to_string(vram_mb) + ",\n"
             "  \"n_layers\": " + std::to_string(n_layers) + ",\n"
-            "  \"local_files\": [\"" + json_escape(path) + "\"]";
+            "  \"model\": { \"local_files\": [\"" + json_escape(path) + "\"] }";
     const String chat_template = options.get("chat_template", "");
     if (!chat_template.is_empty()) {
         model_card_json += ",\n  \"chat_template\": [\"" + json_escape(to_utf8(chat_template)) + "\"]";
@@ -287,7 +300,17 @@ nvigi::Result NvigiLLM::run_generation(GenerationRun &run, const std::string &pr
     ctx.runtimeParameters = runtime;
 
     run.start = std::chrono::steady_clock::now();
-    nvigi::Result result = instance->evaluate(&ctx);
+    // evaluateAsync streams per-token DataPending callbacks from a plugin
+    // thread (the synchronous evaluate() would deliver the whole reply in a
+    // single Done callback). We block here until the final state arrives; for
+    // generate_async() this whole function already runs on a worker thread.
+    nvigi::Result result = instance->evaluateAsync(&ctx);
+    if (result == nvigi::kResultOk) {
+        std::unique_lock<std::mutex> lock(run.mutex);
+        if (!run.cv.wait_for(lock, std::chrono::seconds(600), [&run] { return run.done; })) {
+            result = nvigi::kResultTimedOut;
+        }
+    }
     const double total_ms = ms_since(run.start);
 
     Dictionary timings;

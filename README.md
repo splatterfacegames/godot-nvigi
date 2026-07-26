@@ -109,7 +109,7 @@ Integer return codes are NVIGI result codes (`0` == OK); decode with
 
 | Member | Description |
 | --- | --- |
-| `load_model(model_path, options := {}) -> int` | Loads a whisper.cpp GGML model (e.g. `ggml-tiny.en.bin`). Options: `backend`, `language` ("en"), `threads`, `vram_budget_mb`, `vram_mb`. |
+| `load_model(model_path, options := {}) -> int` | Loads a whisper.cpp GGML model. **The file must have a `.gguf` extension** (rename `ggml-*.bin` if needed). Options: `backend`, `language` ("en"), `threads`, `vram_budget_mb`, `vram_mb`. |
 | `transcribe_wav(wav_path) -> Dictionary` | Blocking; PCM16 WAV of any rate/channels (auto downmix + resample to 16 kHz mono). Returns `{ ok, text, ms, error }`. |
 | `is_model_loaded() / unload_model() / get_last_error()` | |
 
@@ -129,7 +129,7 @@ The pattern is deliberately uniform — see `src/nvigi_llm.cpp`:
 | Model | File | License |
 | --- | --- | --- |
 | [Qwen2.5-0.5B-Instruct-GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) | `qwen2.5-0.5b-instruct-q4_k_m.gguf` (~490 MB) | Apache-2.0 |
-| [whisper.cpp tiny.en](https://huggingface.co/ggerganov/whisper.cpp) | `ggml-tiny.en.bin` (~78 MB) | MIT |
+| [whisper.cpp tiny.en](https://huggingface.co/ggerganov/whisper.cpp) | `ggml-tiny.en.gguf` (~78 MB; whisper.cpp's `ggml-tiny.en.bin`, renamed - the NVIGI ASR plugin requires the `.gguf` extension) | MIT |
 
 Any llama.cpp-compatible GGUF works with `NvigiLLM` (subject to VRAM). Models from
 NVIDIA's own catalog (downloaded through the NVIGI Developer Pack) are covered by the

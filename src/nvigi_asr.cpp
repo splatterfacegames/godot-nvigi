@@ -190,7 +190,7 @@ int NvigiASR::load_model(const String &model_path, const Dictionary &options) {
             "  \"name\": \"" + json_escape(to_utf8(model_path.get_file())) + "\",\n"
             "  \"guid\": \"{00000000-0000-0000-0000-000000000002}\",\n"
             "  \"vram\": " + std::to_string(vram_mb) + ",\n"
-            "  \"local_files\": [\"" + json_escape(path) + "\"]\n"
+            "  \"model\": { \"local_files\": [\"" + json_escape(path) + "\"] }\n"
             "}";
 
     language = to_utf8(options.get("language", "en"));

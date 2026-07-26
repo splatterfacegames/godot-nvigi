@@ -8,13 +8,13 @@
 # Requires (see setup.ps1 / README):
 #   demo/addons/godot_nvigi/bin/       - wrapper + NVIGI DLLs
 #   demo/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
-#   demo/models/ggml-tiny.en.bin
+#   demo/models/ggml-tiny.en.gguf
 #
 # Exits with code 0 on success, 1 on failure.
 extends SceneTree
 
 const LLM_MODEL := "res://models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
-const ASR_MODEL := "res://models/ggml-tiny.en.bin"
+const ASR_MODEL := "res://models/ggml-tiny.en.gguf"
 
 func _init() -> void:
 	var failures := 0

@@ -31,7 +31,8 @@ protected:
 public:
     ~NvigiASR();
 
-    // Loads a whisper.cpp GGML model file (e.g. ggml-tiny.en-q5_1.bin/.gguf).
+    // Loads a whisper.cpp GGML model file. NOTE: the NVIGI ASR plugin requires
+    // the file to have a .gguf extension (rename ggml-*.bin accordingly).
     // Options (all optional):
     //   backend (String)     - "cuda" (default) or "cpu"
     //   language (String)    - ISO 639-1 code, default "en"
