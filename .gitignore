@@ -1,0 +1,29 @@
+# --- build outputs -----------------------------------------------------------
+*.obj
+*.lib
+*.exp
+*.pdb
+*.dll
+*.so
+*.dylib
+.sconsign.dblite
+compile_commands.json
+
+# --- NVIGI SDK binaries / packman pulls (never commit; see license matrix) ---
+thirdparty/_sdk/
+.tools/
+
+# --- AI models (downloaded by the user; NVIDIA/Qwen/whisper licenses) --------
+demo/models/
+*.gguf
+*.onnx
+*.bin
+
+# --- Godot -------------------------------------------------------------------
+demo/.godot/
+demo/android/
+*.import
+
+# --- misc --------------------------------------------------------------------
+__pycache__/
+*.log

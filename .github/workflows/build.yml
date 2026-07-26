@@ -1,0 +1,47 @@
+# Builds the GDExtension DLL on windows-latest.
+#
+# Note: only NVIGI *headers* (from the submodules) are needed to compile the
+# wrapper, so CI does not download the NVIGI PDK or plugin binaries. A full
+# model-inference smoke test is NOT run here because GitHub-hosted runners
+# have no NVIDIA GPU; run `demo/smoke.gd` locally instead (see README).
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install SCons
+        run: pip install scons
+
+      - name: Cache SCons build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .sconsign.dblite
+            thirdparty/godot-cpp/bin
+            thirdparty/godot-cpp/gen
+            thirdparty/godot-cpp/src/**/*.obj
+          key: scons-${{ runner.os }}-${{ hashFiles('thirdparty/godot-cpp/.git') }}-v1
+
+      - name: Build GDExtension (release)
+        run: scons target=template_release
+
+      - name: Upload DLL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdnvigi-windows-x86_64
+          path: demo/addons/godot_nvigi/bin/gdnvigi*.dll
