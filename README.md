@@ -1,5 +1,7 @@
 # godot-nvigi
 
+[Splatterface Games](https://www.splatterfacegames.com/) · [Repository](https://github.com/splatterfacegames/godot-nvigi) · [MIT License](LICENSE)
+
 **Local, on-device AI inference for Godot 4 via NVIDIA In-Game Inferencing (NVIGI).**
 
 A Windows x64 GDExtension that wraps the [NVIGI SDK](https://github.com/NVIDIA-RTX/NVIGI)
@@ -50,7 +52,7 @@ layout required.
 ## Quickstart
 
 ```powershell
-git clone --recursive https://github.com/<you>/godot-nvigi
+git clone --recursive https://github.com/splatterfacegames/godot-nvigi
 cd godot-nvigi
 
 # 1. NVIGI SDK: downloads the prebuilt NVIGI-Core PDK, pulls NVIGI's prebuilt
